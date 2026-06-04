@@ -2,6 +2,13 @@ const express = require("express"); // create web server belongs to nodejs
 const app = express();
 const port = 3000;
 
+const mongoose = require("mongoose");
+const uri = "mongodb+srv://toka_admin:12345@cluster0.fzuwe7b.mongodb.net/?appName=Cluster0"
+mongoose
+  .connect(uri)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Could not connect to MongoDB", err));
+
 const Article = require("./models/Article");
 
 app.get("/", (req, res) => {
