@@ -3,7 +3,8 @@ const app = express();
 const port = 3000;
 
 const mongoose = require("mongoose");
-const uri = "mongodb+srv://toka_admin:12345@cluster0.fzuwe7b.mongodb.net/?appName=Cluster0"
+const uri =
+  "mongodb+srv://toka_admin:12345@cluster0.fzuwe7b.mongodb.net/?appName=Cluster0";
 mongoose
   .connect(uri)
   .then(() => console.log("Connected to MongoDB"))
@@ -47,6 +48,53 @@ app.get("/find-sum-query", (req, res) => {
     num2: req.query.num2,
     sum: parseInt(req.query.num1) + parseInt(req.query.num2),
   });
+});
+
+//articles endpoints //
+
+app.post("/articles", async (req, res) => {
+  const newArticle = new Article();
+
+  const artTitle = req.body.articleTitle;
+  const artBody = req.body.articleBody;
+
+  newArticle.title = artTitle;
+  newArticle.numberofLikes = 0;
+  newArticle.body = artBody;
+  await newArticle.save();
+  res.send("Article created successfully");
+});
+
+app.get("/articles", async (req, res) => {
+  const articles = await Article.find();
+  res.json(articles);
+});
+
+app.get("/articles/:articleId", async (req, res) => {
+  const id = req.params.articleId;
+  try {
+    const article = await Article.findById(id);
+    res.json(article);
+  } catch (error) {
+    res.status(404).send("Article not found");
+  }
+});
+
+app.delete("/articles/:articleId", async (req, res) => {
+  const id = req.params.articleId;
+  try {
+    const article = await Article.findById(id);
+    await article.remove();
+    res.send('article with title "' + article.title + '" deleted successfully');
+  } catch (error) {
+    // res.status(404).send("Article not found");
+    res.json(error);
+  }
+});
+
+app.get("/showArticles", async (req, res) => {
+  const articles = await Article.find();
+  res.render("articles.ejs", { articles });
 });
 
 app.listen(port, () => {
